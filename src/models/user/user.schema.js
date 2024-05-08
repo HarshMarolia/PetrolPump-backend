@@ -1,19 +1,45 @@
 import mongoose from "mongoose";
-
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
+// Pump owner
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    phone_number: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+    },
+    role: {
+      type: String,
+      enum: ["admin", "superUser", "user"],
+      default: "user",
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
+    subscription_expiry: {
+      type: Date,
+      default: Date.now,
+    },
+    blacklisted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 const User = mongoose.model("User", userSchema);
 
