@@ -1,43 +1,65 @@
-import Client from "./client.schema";
+import Client from "./client.schema.js";
 
 const getClients = async () => {
-  const clients = await Client.find();
-  return clients;
+  try {
+    const clients = (await Client.find().populate({
+      path: "petrol_pumps",
+      select: "name phone_number city state -_id",
+    }));
+    return clients;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const getClientById = async (id) => {
-  const client = await Client.findById(id);
-  return client;
+  try {
+    const client = await Client.findById(id);
+    return client;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const createClient = async (clientData) => {
-  const { pan_number, name, userId } = clientData;
+  try {
+    const { pan_number, name, userId } = clientData;
 
-  let client = await Client.findOne({ pan_number });
+    let client = await Client.findOne({ pan_number });
 
-  if (client) {
-    if (client.petrol_pumps.includes(userId)) {
-      return client;
+    if (client) {
+      if (client.petrol_pumps.includes(userId)) {
+        return client;
+      }
+
+      client.petrol_pumps.push(userId);
+      client = await client.save();
+    } else {
+      client = await Client.create({
+        pan_number,
+        name,
+        petrol_pumps: [userId],
+      });
     }
 
-    client.petrol_pumps.push(userId);
-    client = await client.save();
-  } else {
-    client = await Client.create({
-      pan_number,
-      name,
-      petrol_pumps: [userId],
-    });
+    return client;
+  } catch (error) {
+    throw new Error(error.message);
   }
-
-  return client;
 };
 
 const updateClient = async (id, client) => {
-  const updatedClient = await Client.findByIdAndUpdate(id, client, {
-    new: true,
-  });
-  return updatedClient;
+  try {
+    const updatedClient = await Client.findByIdAndUpdate(id, client, {
+      new: true,
+    });
+    if (!updateClient) {
+      throw new Error("Client not found");
+    }
+    return updatedClient;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const deleteClient = async (id) => {
@@ -45,10 +67,4 @@ const deleteClient = async (id) => {
   return deletedClient;
 };
 
-export default {
-  getClients,
-  getClientById,
-  createClient,
-  updateClient,
-  deleteClient,
-};
+export { getClients, getClientById, createClient, updateClient, deleteClient };

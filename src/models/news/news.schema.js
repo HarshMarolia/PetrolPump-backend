@@ -22,7 +22,7 @@ const newSchema = new mongoose.Schema(
     newsFor: {
       type: String,
       enum: ["city", "state", "country"],
-      default: "local",
+      default: "country",
     },
     city: {
       type: String,

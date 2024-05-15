@@ -1,9 +1,10 @@
 import {
   createUser,
-  findUserByEmail,
+  findUserByPhoneNumber,
   getUserById,
   getAllUsers,
   updateUser,
+  updatePassword,
 } from "../../models/user/user.model.js";
 
 const httpCreateUser = async (req, res) => {
@@ -17,9 +18,9 @@ const httpCreateUser = async (req, res) => {
   }
 };
 
-const httpFindUserByEmail = async (req, res) => {
+const httpFindUserByPhoneNumber = async (req, res) => {
   try {
-    const user = await findUserByEmail(req.body.email);
+    const user = await findUserByPhoneNumber(req.params.phone);
     res.status(200).json(user);
   } catch (error) {
     res
@@ -61,10 +62,22 @@ const httpUpdateUser = async (req, res) => {
   }
 };
 
+const httpUpdatePassword = async (req, res) => {
+  try {
+    const user = await updatePassword(req.params.id, req.body.password);
+    res.status(200).json(user);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "Error updating password", details: error.message });
+  }
+};
+
 export {
   httpCreateUser,
-  httpFindUserByEmail,
+  httpFindUserByPhoneNumber,
   httpGetUserById,
   httpGetAllUsers,
   httpUpdateUser,
+  httpUpdatePassword,
 };

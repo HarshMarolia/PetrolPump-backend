@@ -1,40 +1,63 @@
-import News from "./news.schema";
+import News from "./news.schema.js";
 
 const getNews = async () => {
-  const news = await News.find();
-  return news;
+  try {
+    const news = await News.find().populate({
+      path: "newsWriter",
+      select: "name",
+    });
+    return news;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const getNewsByState = async (state) => {
-  const news = await News.find({
-    newsFor: { $in: ["state", "country"] },
-    state,
-  });
-  return news;
+  try {
+    const news = await News.find({
+      newsFor: { $in: ["state", "country"] },
+      state,
+    }).populate({
+      path: "newsWriter",
+      select: "name -_id",
+    });
+    return news;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const getNewsByCity = async (city) => {
-  const news = await News.find({
-    newsFor: { $in: ["city", "country"] },
-    city,
-  });
-  return news;
+  try {
+    const news = await News.find({
+      newsFor: { $in: ["city", "country"] },
+      city,
+    }).populate({
+      path: "newsWriter",
+      select: "name -_id",
+    });
+    return news;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const createNews = async (news) => {
-  const createdNews = await News.create(news);
-  return createdNews;
+  try {
+    const createdNews = await News.create(news);
+    return createdNews;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const deleteNews = async (id) => {
-  const deletedNews = await News.findByIdAndDelete(id);
-  return deletedNews;
+  try {
+    const deletedNews = await News.findByIdAndDelete(id);
+    return deletedNews;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
-export default {
-  getNews,
-  getNewsByCity,
-  getNewsByState,
-  createNews,
-  deleteNews,
-};
+export { getNews, getNewsByCity, getNewsByState, createNews, deleteNews };

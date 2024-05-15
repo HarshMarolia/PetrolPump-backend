@@ -1,43 +1,65 @@
-import Employee from "./employee.schema";
+import Employee from "./employee.schema.js";
 
 const getEmployees = async () => {
-  const employees = await Employee.find();
-  return employees;
+  try {
+    const employees = await Employee.find().populate({
+      path: "petrol_pumps",
+      select: "name phone_number city state -_id",
+    });
+    return employees;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const getEmployeeById = async (id) => {
-  const employee = await Employee.findById(id);
-  return employee;
+  try {
+    const employee = await Employee.findById(id);
+    return employee;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const createEmployee = async (employeeData) => {
-  const { aadhar_number, name, userId } = employeeData;
+  try {
+    const { aadhar_number, name, userId } = employeeData;
 
-  let employee = await Employee.findOne({ aadhar_number });
+    let employee = await Employee.findOne({ aadhar_number });
 
-  if (employee) {
-    if (employee.petrol_pumps.includes(userId)) {
-      return employee;
+    if (employee) {
+      if (employee.petrol_pumps.includes(userId)) {
+        return employee;
+      }
+
+      employee.petrol_pumps.push(userId);
+      employee = await employee.save();
+    } else {
+      employee = await Employee.create({
+        aadhar_number,
+        name,
+        petrol_pumps: [userId],
+      });
     }
 
-    employee.petrol_pumps.push(userId);
-    employee = await employee.save();
-  } else {
-    employee = await Employee.create({
-      aadhar_number,
-      name,
-      petrol_pumps: [userId],
-    });
+    return employee;
+  } catch (error) {
+    throw new Error(error.message);
   }
-
-  return employee;
 };
 
 const updateEmployee = async (id, employee) => {
-  const updatedEmployee = await Employee.findByIdAndUpdate(id, employee, {
-    new: true,
-  });
-  return updatedEmployee;
+  try {
+    const updatedEmployee = await Employee.findByIdAndUpdate(id, employee, {
+      new: true,
+    });
+    if (!updatedEmployee) {
+      throw new Error("Employee not found");
+    }
+    return updatedEmployee;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const deleteEmployee = async (id) => {
@@ -45,7 +67,7 @@ const deleteEmployee = async (id) => {
   return deletedEmployee;
 };
 
-export default {
+export {
   getEmployees,
   getEmployeeById,
   createEmployee,
