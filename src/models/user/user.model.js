@@ -20,7 +20,7 @@ const createUser = async (user) => {
 
 const findUserByPhoneNumber = async (phone_number) => {
   try {
-    const user = await User.findOne({ phone_number });
+    const user = await User.findOne({ phone_number: phone_number });
     if (!user) {
       throw new Error("User not found");
     }

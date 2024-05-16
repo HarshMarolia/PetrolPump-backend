@@ -7,14 +7,19 @@ import {
   httpUpdateUser,
   httpUpdatePassword,
 } from "./user.controller.js";
+import { isAdminAuthenticated } from "../../middlewares/authenticate.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/", httpGetAllUsers);
-userRouter.post("/", httpCreateUser);
-userRouter.get("/:id", httpGetUserById);
-userRouter.get("/phone/:phone", httpFindUserByPhoneNumber);
-userRouter.put("/:id", httpUpdateUser);
-userRouter.patch("/password/:id", httpUpdatePassword);
+userRouter.get("/", isAdminAuthenticated, httpGetAllUsers);
+userRouter.post("/", isAdminAuthenticated, httpCreateUser);
+userRouter.get("/:id", isAdminAuthenticated, httpGetUserById);
+userRouter.get(
+  "/phone/:phone",
+  isAdminAuthenticated,
+  httpFindUserByPhoneNumber
+);
+userRouter.put("/:id", isAdminAuthenticated, httpUpdateUser);
+userRouter.patch("/password/:id", isAdminAuthenticated, httpUpdatePassword);
 
 export default userRouter;

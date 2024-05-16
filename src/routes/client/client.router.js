@@ -6,13 +6,14 @@ import {
   httpUpdateClient,
   httpDeleteClient,
 } from "./client.controller.js";
+import { isAdminAuthenticated } from "../../middlewares/authenticate.js";
 
 const clientRouter = express.Router();
 
-clientRouter.get("/", httpGetClients);
-clientRouter.get("/:id", httpGetClientById);
-clientRouter.post("/", httpCreateClient);
-clientRouter.put("/:id", httpUpdateClient);
-clientRouter.delete("/:id", httpDeleteClient);
+clientRouter.get("/", isAdminAuthenticated, httpGetClients);
+clientRouter.get("/:id", isAdminAuthenticated, httpGetClientById);
+clientRouter.post("/", isAdminAuthenticated, httpCreateClient);
+clientRouter.put("/:id", isAdminAuthenticated, httpUpdateClient);
+clientRouter.delete("/:id", isAdminAuthenticated, httpDeleteClient);
 
 export default clientRouter;

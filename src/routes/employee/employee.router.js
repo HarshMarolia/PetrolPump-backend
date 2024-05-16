@@ -7,13 +7,14 @@ import {
   httpUpdateEmployee,
   httpDeleteEmployee,
 } from "./employee.controller.js";
+import { isAdminAuthenticated } from "../../middlewares/authenticate.js";
 
 const employeeRouter = express.Router();
 
-employeeRouter.get("/", httpGetEmployees);
-employeeRouter.get("/:id", httpGetEmployeeById);
-employeeRouter.post("/", httpCreateEmployee);
-employeeRouter.put("/:id", httpUpdateEmployee);
-employeeRouter.delete("/:id", httpDeleteEmployee);
+employeeRouter.get("/", isAdminAuthenticated, httpGetEmployees);
+employeeRouter.get("/:id", isAdminAuthenticated, httpGetEmployeeById);
+employeeRouter.post("/", isAdminAuthenticated, httpCreateEmployee);
+employeeRouter.put("/:id", isAdminAuthenticated, httpUpdateEmployee);
+employeeRouter.delete("/:id", isAdminAuthenticated, httpDeleteEmployee);
 
 export default employeeRouter;
