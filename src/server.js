@@ -5,9 +5,16 @@ import passport from "passport";
 import { COOKIE_MAX_AGE, COOKIE_NAME } from "./config/cookies.js";
 import session from "express-session";
 import "./config/passport.js";
+import cors from "cors";
 const app = express();
 config();
 
+const allowOrigins = [process.env.FRONTEND_URL];
+app.use(
+  cors({
+    origin: allowOrigins,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
