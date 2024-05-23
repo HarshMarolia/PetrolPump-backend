@@ -5,7 +5,7 @@ const SALT_ROUNDS = 10;
 
 const createUser = async (user) => {
   try {
-    const userData = await User.findOne({ phone_number: user.phone_number });
+    const userData = await User.findOne({ email: user.email });
     if (userData) {
       throw new Error("User already exists");
     }
@@ -18,9 +18,9 @@ const createUser = async (user) => {
   }
 };
 
-const findUserByPhoneNumber = async (phone_number) => {
+const findUserByEmail = async (email) => {
   try {
-    const user = await User.findOne({ phone_number: phone_number });
+    const user = await User.findOne({ email: email });
     if (!user) {
       throw new Error("User not found");
     }
@@ -32,7 +32,7 @@ const findUserByPhoneNumber = async (phone_number) => {
 
 const getUserById = async (id) => {
   try {
-    const user = await User.findById(id).select("-password -blacklisted -role");
+    const user = await User.findById(id).select("-password -blacklisted");
     if (!user) {
       throw new Error("User not found");
     }
@@ -64,28 +64,10 @@ const updateUser = async (id, user) => {
   }
 };
 
-const updatePassword = async (id, password) => {
-  try {
-    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      { password: hashedPassword },
-      { new: true }
-    );
-    if (!updatedUser) {
-      throw new Error("User not found");
-    }
-    return updatedUser;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
-
 export {
   createUser,
-  findUserByPhoneNumber,
+  findUserByEmail,
   getUserById,
   getAllUsers,
   updateUser,
-  updatePassword,
 };

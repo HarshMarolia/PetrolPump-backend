@@ -2,14 +2,14 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import {
   getUserById,
-  findUserByPhoneNumber,
+  findUserByEmail,
 } from "../models/user/user.model.js";
 import bcrypt from "bcrypt";
 
 passport.use(
   new LocalStrategy(async (username, password, done) => {
     try {
-      const user = await findUserByPhoneNumber(username);
+      const user = await findUserByEmail(username);
 
       if (!user) return done(null, false);
 

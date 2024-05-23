@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import User from "../user/user.schema.js";
 
-const authenticateUser = async ({ phone_number, password }) => {
+const authenticateUser = async ({ email, password }) => {
   try {
-    const user = await User.findOne({ phone_number });
+    const user = await User.findOne({ email });
     if (!user) {
       throw new Error("User not found");
     }

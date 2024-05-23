@@ -4,7 +4,7 @@ const getClients = async () => {
   try {
     const clients = (await Client.find().populate({
       path: "petrol_pumps",
-      select: "name phone_number city state -_id",
+      select: "name email city state -_id",
     }));
     return clients;
   } catch (error) {
