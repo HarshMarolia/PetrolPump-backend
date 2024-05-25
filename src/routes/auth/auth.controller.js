@@ -47,7 +47,7 @@ const httpForgotPassword = async (req, res) => {
       });
       const link = `${clientURL}/reset-password/${user._id}/${token}`;
       sendEmail(user.email, link);
-      res.send("Email sent to " + user.email);
+      res.status(200).json({ message: "Email sent to " + user.email });
     }
   } catch (error) {
     throw new Error(error.message);
