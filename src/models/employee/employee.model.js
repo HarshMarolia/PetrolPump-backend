@@ -14,7 +14,10 @@ const getEmployees = async () => {
 
 const getEmployeeById = async (id) => {
   try {
-    const employee = await Employee.findById(id);
+    const employee = await Employee.findOne({ aadhar_number: id }).populate({
+      path: "petrol_pumps",
+      select: "name email city state -_id",
+    });
     return employee;
   } catch (error) {
     throw new Error(error.message);

@@ -2,10 +2,10 @@ import Client from "./client.schema.js";
 
 const getClients = async () => {
   try {
-    const clients = (await Client.find().populate({
+    const clients = await Client.find().populate({
       path: "petrol_pumps",
       select: "name email city state -_id",
-    }));
+    });
     return clients;
   } catch (error) {
     throw new Error(error.message);
@@ -14,7 +14,10 @@ const getClients = async () => {
 
 const getClientById = async (id) => {
   try {
-    const client = await Client.findById(id);
+    const client = await Client.findOne({ pan_number: id }).populate({
+      path: "petrol_pumps",
+      select: "name email city state -_id",
+    });
     return client;
   } catch (error) {
     throw new Error(error.message);

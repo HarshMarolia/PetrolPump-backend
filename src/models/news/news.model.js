@@ -15,8 +15,10 @@ const getNews = async () => {
 const getNewsByState = async (state) => {
   try {
     const news = await News.find({
-      newsFor: { $in: ["state", "country"] },
-      state,
+      $or: [
+        { newsFor: "state", state },
+        { newsFor: "country" }
+      ]
     }).populate({
       path: "newsWriter",
       select: "name -_id",
@@ -30,8 +32,10 @@ const getNewsByState = async (state) => {
 const getNewsByCity = async (city) => {
   try {
     const news = await News.find({
-      newsFor: { $in: ["city", "country"] },
-      city,
+      $or: [
+        { newsFor: "city", city },
+        { newsFor: "country" }
+      ]
     }).populate({
       path: "newsWriter",
       select: "name -_id",
