@@ -6,6 +6,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    pumpOwner: {
+      type: String,
+      required: true,
+    },
+    phoneNumber: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,

@@ -4,7 +4,7 @@ const getEmployees = async () => {
   try {
     const employees = await Employee.find().populate({
       path: "petrol_pumps",
-      select: "name email city state -_id",
+      select: "name pumpOwner phoneNumber email city state -_id",
     });
     return employees;
   } catch (error) {
@@ -16,7 +16,7 @@ const getEmployeeById = async (id) => {
   try {
     const employee = await Employee.findOne({ aadhar_number: id }).populate({
       path: "petrol_pumps",
-      select: "name email city state -_id",
+      select: "name pumpOwner phoneNumber email city state -_id",
     });
     return employee;
   } catch (error) {
