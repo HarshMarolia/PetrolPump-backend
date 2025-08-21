@@ -28,7 +28,7 @@ const httpLogin = async (req, res) => {
 const httpLogout = async (req, res) => {
   try {
     req.logout(() => {});
-    res.status(201).send("http://localhost:3000/login");
+    res.status(201).send(`${clientURL}/login`);
   } catch (error) {
     res.statusMessage = "Error logging out";
     res.status(401).send(error.message);
