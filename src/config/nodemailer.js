@@ -1,0 +1,102 @@
+import nodemailer from "nodemailer";
+import { config } from "dotenv";
+config();
+
+var transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+
+export const sendEmail = async (email, link) => {
+  var mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Here's your link to updated your password",
+    html: `<!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Password Reset</title>
+      <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #333333;
+    }
+    .content {
+      padding: 20px;
+      text-align: center;
+    }
+    .content p {
+      font-size: 16px;
+      color: #666666;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #ffffff !important;
+      background-color: #007BFF;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .footer {
+      margin-top: 20px;
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #999999;
+    }
+  </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Password Reset Request</h1>
+        </div>
+        <div class="content">
+          <p>Hello,</p>
+          <p>You requested a password reset for your account. Click the button below to create a new password.</p>
+          <a href="${link}" class="button">Create New Password</a>
+          <p>If you did not request this, please ignore this email.</p>
+        </div>
+        <div class="footer">
+          <p>&copy; Team Petrol Pump. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+};

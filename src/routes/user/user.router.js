@@ -6,13 +6,14 @@ import {
   httpGetAllUsers,
   httpUpdateUser,
 } from "./user.controller.js";
+import { isAdminAuthenticated } from "../../middlewares/authenticate.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/", httpGetAllUsers);
-userRouter.post("/", httpCreateUser);
-userRouter.get("/:email", httpFindUserByEmail);
-userRouter.get("/:id", httpGetUserById);
-userRouter.put("/:id", httpUpdateUser);
+userRouter.get("/", isAdminAuthenticated, httpGetAllUsers);
+userRouter.post("/", isAdminAuthenticated, httpCreateUser);
+userRouter.get("/:id", isAdminAuthenticated, httpGetUserById);
+userRouter.get("/email/:email", isAdminAuthenticated, httpFindUserByEmail);
+userRouter.put("/:id", isAdminAuthenticated, httpUpdateUser);
 
 export default userRouter;

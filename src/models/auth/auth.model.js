@@ -1,0 +1,20 @@
+import bcrypt from "bcrypt";
+import User from "../user/user.schema.js";
+
+const authenticateUser = async ({ email, password }) => {
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new Error("Invalid password");
+    }
+    return user;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export { authenticateUser };

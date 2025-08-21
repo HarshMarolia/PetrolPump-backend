@@ -19,7 +19,7 @@ const httpCreateUser = async (req, res) => {
 
 const httpFindUserByEmail = async (req, res) => {
   try {
-    const user = await findUserByEmail(req.body.email);
+    const user = await findUserByEmail(req.params.email);
     res.status(200).json(user);
   } catch (error) {
     res
