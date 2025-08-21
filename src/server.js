@@ -9,6 +9,12 @@ import cors from "cors";
 const app = express();
 config();
 
+const isProduction = process.env.NODE_ENV === "production";
+
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
+
 const allowOrigins = [process.env.FRONTEND_URL];
 app.use(
   cors({
@@ -25,6 +31,8 @@ app.use(
     saveUninitialized: true,
     cookie: {
       maxAge: COOKIE_MAX_AGE,
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
     },
   })
 );
