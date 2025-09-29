@@ -4,6 +4,7 @@ import { router } from "./routes/index.js";
 import passport from "passport";
 import { COOKIE_MAX_AGE, COOKIE_NAME } from "./config/cookies.js";
 import session from "express-session";
+import MongoStore from "connect-mongo";
 import "./config/passport.js";
 import cors from "cors";
 const app = express();
@@ -28,7 +29,12 @@ app.use(
   session({
     secret: COOKIE_NAME,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URL,
+      ttl: Math.floor(COOKIE_MAX_AGE / 1000),
+      autoRemove: "native",
+    }),
     cookie: {
       maxAge: COOKIE_MAX_AGE,
       sameSite: isProduction ? "none" : "lax",
