@@ -37,8 +37,9 @@ app.use(
     }),
     cookie: {
       maxAge: COOKIE_MAX_AGE,
-      sameSite: isProduction ? "none" : "lax",
+      sameSite: "lax",
       secure: true,
+      httpOnly: true,
     },
   })
 );
