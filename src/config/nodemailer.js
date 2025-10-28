@@ -3,9 +3,9 @@ import { config } from "dotenv";
 config();
 
 var transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true, // true only for 465
+  host: "smtp-relay.brevo.com",
+  port: 587,
+  secure: false,
   pool: true,
   maxConnections: 3,
   maxMessages: 100,
