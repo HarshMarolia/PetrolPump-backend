@@ -84,7 +84,7 @@ export const sendEmail = async (email, link) => {
           <p>If you did not request this, please ignore this email.</p>
         </div>
         <div class="footer">
-          <p>&copy; Team Petrol Pump. All rights reserved.</p>
+          <p>&copy; Team FuelInfo. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -92,11 +92,105 @@ export const sendEmail = async (email, link) => {
     `,
   };
 
-  transporter.sendMail(mailOptions, function (error, info) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Email sent: " + info.response);
+  // Return a promise and await the send to ensure completion before responding
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email sent: " + info.response);
+    return info;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const sendWelcomeEmail = async (email, link) => {
+  var mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Welcome to Petrol Pump — You're all set!",
+    html: `<!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Welcome</title>
+      <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
     }
-  });
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #333333;
+    }
+    .content {
+      padding: 20px;
+      text-align: center;
+    }
+    .content p {
+      font-size: 16px;
+      color: #666666;
+    }
+    .button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #ffffff !important;
+      background-color: #007BFF;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .footer {
+      margin-top: 20px;
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #999999;
+    }
+  </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Welcome to Petrol Pump</h1>
+        </div>
+        <div class="content">
+          <p>Congratulations on joining our network!</p>
+          <p>To get started, you can set your password anytime using the button below.</p>
+          <a href="${link}" class="button">Set/Reset Password</a>
+          <p>If you didn’t request this, you can safely ignore this email.</p>
+        </div>
+        <div class="footer">
+          <p>&copy; Team FuelInfo. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `,
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Welcome email sent: " + info.response);
+    return info;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };

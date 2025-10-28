@@ -5,10 +5,33 @@ import {
   getAllUsers,
   updateUser,
 } from "../../models/user/user.model.js";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET, FRONTEND_URL } from "../../config/cookies.js";
+import { sendWelcomeEmail } from "../../config/nodemailer.js";
 
 const httpCreateUser = async (req, res) => {
   try {
     const user = await createUser(req.body);
+
+    // Generate a short-lived reset token for initial password setup
+    const secret = JWT_SECRET + user.password;
+    const token = jwt.sign({ email: user.email, id: user._id }, secret, {
+      expiresIn: "15m",
+    });
+    const link = `${FRONTEND_URL}/reset-password/${user._id}/${token}`;
+
+    try {
+      await sendWelcomeEmail(user.email, link);
+    } catch (e) {
+      // proceed but inform client email failed
+      return res
+        .status(201)
+        .json({
+          user,
+          warning: "User created but welcome email failed to send",
+        });
+    }
+
     res.status(201).json(user);
   } catch (error) {
     res

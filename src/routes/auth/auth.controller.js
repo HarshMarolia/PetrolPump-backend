@@ -46,11 +46,11 @@ const httpForgotPassword = async (req, res) => {
         expiresIn: "5m",
       });
       const link = `${clientURL}/reset-password/${user._id}/${token}`;
-      sendEmail(user.email, link);
+      await sendEmail(user.email, link);
       res.status(200).json({ message: "Email sent to " + user.email });
     }
   } catch (error) {
-    throw new Error(error.message);
+    res.status(500).json({ message: "Failed to send email", error: error.message });
   }
 };
 
