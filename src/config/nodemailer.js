@@ -3,17 +3,42 @@ import { config } from "dotenv";
 config();
 
 var transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // true only for 465
   pool: true,
   maxConnections: 3,
   maxMessages: 100,
-  connectionTimeout: 10000, // 10s fail-fast on connection issues
-  socketTimeout: 15000, // 15s
+  connectionTimeout: 20000,
+  socketTimeout: 30000,
+  requireTLS: true,
+  keepAlive: true,
+  debug: String(process.env.EMAIL_DEBUG || "false") === "true",
+  tls: {
+    rejectUnauthorized:
+      process.env.EMAIL_TLS_REJECT_UNAUTHORIZED === undefined
+        ? true
+        : String(process.env.EMAIL_TLS_REJECT_UNAUTHORIZED) === "true",
+    minVersion: "TLSv1.2",
+  },
   auth: {
     user: process.env.EMAIL,
     pass: process.env.EMAIL_PASSWORD,
   },
 });
+
+// Non-blocking startup verification to surface connectivity issues in logs
+(async () => {
+  try {
+    await transporter.verify();
+    console.log("SMTP transporter verified and ready (smtp.gmail.com:465, secure=true)");
+  } catch (e) {
+    console.warn(
+      "SMTP transporter verification failed:",
+      e && e.message ? e.message : e
+    );
+  }
+})();
 
 export const sendEmail = async (email, link) => {
   var mailOptions = {
