@@ -46,8 +46,11 @@ const httpForgotPassword = async (req, res) => {
         expiresIn: "5m",
       });
       const link = `${clientURL}/reset-password/${user._id}/${token}`;
-      await sendEmail(user.email, link);
-      res.status(200).json({ message: "Email sent to " + user.email });
+      // Fire-and-forget to avoid request timeout; log result
+      sendEmail(user.email, link)
+        .then(() => console.log("Password reset email queued/sent"))
+        .catch((e) => console.log("Password reset email failed", e));
+      res.status(200).json({ message: "Password reset link has been queued to send" });
     }
   } catch (error) {
     res.status(500).json({ message: "Failed to send email", error: error.message });

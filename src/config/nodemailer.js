@@ -4,6 +4,11 @@ config();
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
+  pool: true,
+  maxConnections: 3,
+  maxMessages: 100,
+  connectionTimeout: 10000, // 10s fail-fast on connection issues
+  socketTimeout: 15000, // 15s
   auth: {
     user: process.env.EMAIL,
     pass: process.env.EMAIL_PASSWORD,

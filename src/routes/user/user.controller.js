@@ -20,19 +20,12 @@ const httpCreateUser = async (req, res) => {
     });
     const link = `${FRONTEND_URL}/reset-password/${user._id}/${token}`;
 
-    try {
-      await sendWelcomeEmail(user.email, link);
-    } catch (e) {
-      // proceed but inform client email failed
-      return res
-        .status(201)
-        .json({
-          user,
-          warning: "User created but welcome email failed to send",
-        });
-    }
+    // Background send to avoid request timeout; don't fail user creation on email issues
+    sendWelcomeEmail(user.email, link)
+      .then(() => console.log("Welcome email queued/sent"))
+      .catch((e) => console.log("Welcome email failed", e));
 
-    res.status(201).json(user);
+    res.status(201).json({ user, message: "Welcome email has been queued to send" });
   } catch (error) {
     res
       .status(500)
