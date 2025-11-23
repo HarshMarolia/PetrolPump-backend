@@ -1,6 +1,6 @@
 import { JWT_SECRET, FRONTEND_URL } from "../../config/cookies.js";
 import jwt from "jsonwebtoken";
-import { sendEmail } from "../../config/nodemailer.js";
+import { sendEmail } from "../../config/resend.js";
 import User from "../../models/user/user.schema.js";
 import bcrypt from "bcrypt";
 
@@ -46,14 +46,17 @@ const httpForgotPassword = async (req, res) => {
         expiresIn: "5m",
       });
       const link = `${clientURL}/reset-password/${user._id}/${token}`;
-      // Fire-and-forget to avoid request timeout; log result
-      sendEmail(user.email, link)
+      sendEmail(user.email, link, "passwordReset")
         .then(() => console.log("Password reset email queued/sent"))
         .catch((e) => console.log("Password reset email failed", e));
-      res.status(200).json({ message: "Password reset link has been queued to send" });
+      res
+        .status(200)
+        .json({ message: "Password reset link has been queued to send" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Failed to send email", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to send email", error: error.message });
   }
 };
 

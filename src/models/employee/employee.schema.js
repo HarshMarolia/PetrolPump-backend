@@ -11,6 +11,10 @@ const employeeSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    blacklisted: {
+      type: Boolean,
+      default: false,
+    },
     petrol_pumps: [
       {
         type: mongoose.Schema.Types.ObjectId,

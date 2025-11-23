@@ -29,9 +29,11 @@ const httpCreateClient = async (req, res) => {
     const client = await createClient(req.body);
     res.status(201).json(client);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Error creating client", details: error.message });
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      error: error.message || "Error creating client",
+      details: error.details || null,
+    });
   }
 };
 
@@ -40,9 +42,11 @@ const httpUpdateClient = async (req, res) => {
     const client = await updateClient(req.params.id, req.body);
     res.status(200).json(client);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Error updating client", details: error.message });
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      error: error.message || "Error updating client",
+      details: error.details || null,
+    });
   }
 };
 
@@ -51,9 +55,11 @@ const httpDeleteClient = async (req, res) => {
     const client = await deleteClient(req.params.id);
     res.status(200).json(client);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Error deleting client", details: error.message });
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      error: error.message || "Error deleting client",
+      details: error.details || null,
+    });
   }
 };
 

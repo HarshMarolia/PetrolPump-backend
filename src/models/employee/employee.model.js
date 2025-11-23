@@ -31,7 +31,19 @@ const createEmployee = async (employeeData) => {
     let employee = await Employee.findOne({ aadhar_number });
 
     if (employee) {
-      if (employee.petrol_pumps.includes(userId)) {
+      const alreadyLinked = employee.petrol_pumps.some(
+        (pumpId) => pumpId.toString() === String(userId)
+      );
+
+      if (employee.blacklisted && !alreadyLinked) {
+        const error = new Error(
+          "Employee is blacklisted and cannot be onboarded to a new petrol pump"
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (alreadyLinked) {
         return employee;
       }
 
@@ -47,7 +59,7 @@ const createEmployee = async (employeeData) => {
 
     return employee;
   } catch (error) {
-    throw new Error(error.message);
+    throw error;
   }
 };
 
@@ -61,7 +73,7 @@ const updateEmployee = async (id, employee) => {
     }
     return updatedEmployee;
   } catch (error) {
-    throw new Error(error.message);
+    throw error;
   }
 };
 

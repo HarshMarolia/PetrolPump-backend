@@ -7,25 +7,26 @@ import {
 } from "../../models/user/user.model.js";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET, FRONTEND_URL } from "../../config/cookies.js";
-import { sendWelcomeEmail } from "../../config/nodemailer.js";
+import { sendEmail } from "../../config/resend.js";
+
+const generatePasswordResetLink = (user, expiry = "1d") => {
+  const secret = JWT_SECRET + user.password;
+  const token = jwt.sign({ email: user.email, id: user._id }, secret, {
+    expiresIn: expiry,
+  });
+  return `${FRONTEND_URL}/reset-password/${user._id}/${token}`;
+};
 
 const httpCreateUser = async (req, res) => {
   try {
     const user = await createUser(req.body);
-
     // Generate a short-lived reset token for initial password setup
-    const secret = JWT_SECRET + user.password;
-    const token = jwt.sign({ email: user.email, id: user._id }, secret, {
-      expiresIn: "15m",
-    });
-    const link = `${FRONTEND_URL}/reset-password/${user._id}/${token}`;
-
-    // Background send to avoid request timeout; don't fail user creation on email issues
-    sendWelcomeEmail(user.email, link)
-      .then(() => console.log("Welcome email queued/sent"))
+    const link = generatePasswordResetLink(user, "1d");
+    sendEmail(user.email, link, "welcome")
+      .then(() => console.log("Welcome email sent"))
       .catch((e) => console.log("Welcome email failed", e));
 
-    res.status(201).json({ user, message: "Welcome email has been queued to send" });
+    res.status(201).json({ user, message: "User created successfully" });
   } catch (error) {
     res
       .status(500)
@@ -77,10 +78,40 @@ const httpUpdateUser = async (req, res) => {
   }
 };
 
+// Admin-only: generate a password reset link (same logic as forgot-password)
+// so the admin can copy/share it with the user manually.
+const httpAdminGenerateResetLink = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: "Email is required" });
+  }
+
+  try {
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const link = generatePasswordResetLink(user);
+
+    return res.status(200).json({
+      message: "Password reset link generated successfully",
+      link,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: "Error generating password reset link",
+      details: error.message,
+    });
+  }
+};
+
 export {
   httpCreateUser,
   httpFindUserByEmail,
   httpGetUserById,
   httpGetAllUsers,
   httpUpdateUser,
+  httpAdminGenerateResetLink,
 };

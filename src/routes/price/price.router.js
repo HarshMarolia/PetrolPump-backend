@@ -5,11 +5,11 @@ import {
   httpUpdatePetrolPriceIndicator,
   httpUpdateDeieselPriceIndicator,
 } from "./price.controller.js";
-import { isAdminAuthenticated } from "../../middlewares/authenticate.js";
+import { isAdminAuthenticated, isUserAuthenticated } from "../../middlewares/authenticate.js";
 
 const priceRouter = express.Router();
 
-priceRouter.get("/", isAdminAuthenticated, httpGetPriceIndicator);
+priceRouter.get("/", isUserAuthenticated, httpGetPriceIndicator);
 priceRouter.post("/create", isAdminAuthenticated, httpCreatePriceIndicator);
 priceRouter.put(
   "/petrol",

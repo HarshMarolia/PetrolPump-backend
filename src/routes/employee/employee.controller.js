@@ -29,9 +29,11 @@ const httpCreateEmployee = async (req, res) => {
     const employee = await createEmployee(req.body);
     res.status(201).json(employee);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Error creating employee", details: error.message });
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      error: error.message || "Error creating employee",
+      details: error.details || null,
+    });
   }
 };
 
@@ -40,9 +42,11 @@ const httpUpdateEmployee = async (req, res) => {
     const employee = await updateEmployee(req.params.id, req.body);
     res.status(200).json(employee);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Error updating employee", details: error.message });
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      error: error.message || "Error updating employee",
+      details: error.details || null,
+    });
   }
 };
 
@@ -51,9 +55,11 @@ const httpDeleteEmployee = async (req, res) => {
     const employee = await deleteEmployee(req.params.id);
     res.status(200).json(employee);
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: "Error deleting employee", details: error.message });
+    const statusCode = error.statusCode || 500;
+    res.status(statusCode).json({
+      error: error.message || "Error deleting employee",
+      details: error.details || null,
+    });
   }
 };
 

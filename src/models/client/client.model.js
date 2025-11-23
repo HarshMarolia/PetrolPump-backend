@@ -31,7 +31,19 @@ const createClient = async (clientData) => {
     let client = await Client.findOne({ pan_number });
 
     if (client) {
-      if (client.petrol_pumps.includes(userId)) {
+      const alreadyLinked = client.petrol_pumps.some(
+        (pumpId) => pumpId.toString() === String(userId)
+      );
+
+      if (client.blacklisted && !alreadyLinked) {
+        const error = new Error(
+          "Client is blacklisted and cannot be onboarded to a new petrol pump"
+        );
+        error.statusCode = 400;
+        throw error;
+      }
+
+      if (alreadyLinked) {
         return client;
       }
 
@@ -47,7 +59,7 @@ const createClient = async (clientData) => {
 
     return client;
   } catch (error) {
-    throw new Error(error.message);
+    throw error;
   }
 };
 
@@ -56,12 +68,12 @@ const updateClient = async (id, client) => {
     const updatedClient = await Client.findByIdAndUpdate(id, client, {
       new: true,
     });
-    if (!updateClient) {
+    if (!updatedClient) {
       throw new Error("Client not found");
     }
     return updatedClient;
   } catch (error) {
-    throw new Error(error.message);
+    throw error;
   }
 };
 

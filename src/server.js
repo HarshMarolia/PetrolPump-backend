@@ -38,8 +38,8 @@ app.use(
     cookie: {
       maxAge: COOKIE_MAX_AGE,
       sameSite: "lax",
-      secure: true,
-      httpOnly: true,
+      secure: true, //true in production
+      httpOnly: true, //true in production
     },
   })
 );

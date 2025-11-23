@@ -6,14 +6,14 @@ import {
   httpCreateNews,
   httpDeleteNews,
 } from "./news.controller.js";
-import { isAdminAuthenticated } from "../../middlewares/authenticate.js";
+import { isUserAuthenticated, isSuperUserAuthenticated, isAdminAuthenticated } from "../../middlewares/authenticate.js";
 
 const newsRouter = express.Router();
 
-newsRouter.get("/", isAdminAuthenticated, httpGetNews);
-newsRouter.post("/", isAdminAuthenticated, httpCreateNews);
-newsRouter.get("/city/:city", isAdminAuthenticated, httpGetNewsByCity);
-newsRouter.get("/state/:state", isAdminAuthenticated, httpGetNewsByState);
+newsRouter.get("/", isUserAuthenticated, httpGetNews);
+newsRouter.post("/", isSuperUserAuthenticated, httpCreateNews);
+newsRouter.get("/city/:city", isUserAuthenticated, httpGetNewsByCity);
+newsRouter.get("/state/:state", isUserAuthenticated, httpGetNewsByState);
 newsRouter.delete("/:id", isAdminAuthenticated, httpDeleteNews);
 
 export default newsRouter;
