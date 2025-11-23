@@ -37,23 +37,30 @@ const httpLogout = async (req, res) => {
 
 const httpForgotPassword = async (req, res) => {
   try {
+    // Use findOne without select to get password field
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
-      return res.send("User not found");
-    } else {
-      const secret = JWT_SECRET + user.password;
-      const token = jwt.sign({ email: user.email, id: user._id }, secret, {
-        expiresIn: "5m",
-      });
-      const link = `${clientURL}/reset-password/${user._id}/${token}`;
-      sendEmail(user.email, link, "passwordReset")
-        .then(() => console.log("Password reset email queued/sent"))
-        .catch((e) => console.log("Password reset email failed", e));
-      res
-        .status(200)
-        .json({ message: "Password reset link has been queued to send" });
+      return res.status(404).json({ message: "User not found" });
     }
+    
+    // Ensure user has a password (should always be true, but safety check)
+    if (!user.password) {
+      return res.status(400).json({ message: "User account has no password set" });
+    }
+    
+    const secret = JWT_SECRET + user.password;
+    const token = jwt.sign({ email: user.email, id: user._id }, secret, {
+      expiresIn: "1d",
+    });
+    const link = `${clientURL}/reset-password/${user._id}/${token}`;
+    sendEmail(user.email, link, "passwordReset")
+      .then(() => console.log("Password reset email queued/sent"))
+      .catch((e) => console.log("Password reset email failed", e));
+    res
+      .status(200)
+      .json({ message: "Password reset link has been queued to send" });
   } catch (error) {
+    console.error("Error in httpForgotPassword:", error);
     res
       .status(500)
       .json({ message: "Failed to send email", error: error.message });

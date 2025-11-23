@@ -20,13 +20,22 @@ const generatePasswordResetLink = (user, expiry = "1d") => {
 const httpCreateUser = async (req, res) => {
   try {
     const user = await createUser(req.body);
-    // Generate a short-lived reset token for initial password setup
+    
+    if (!user.password) {
+      return res.status(500).json({ 
+        error: "Error creating user", 
+        details: "User created but password was not set properly" 
+      });
+    }
+    
     const link = generatePasswordResetLink(user, "1d");
     sendEmail(user.email, link, "welcome")
       .then(() => console.log("Welcome email sent"))
       .catch((e) => console.log("Welcome email failed", e));
 
-    res.status(201).json({ user, message: "User created successfully" });
+    const userResponse = user.toObject ? user.toObject() : { ...user };
+    delete userResponse.password;
+    res.status(201).json({ user: userResponse, message: "User created successfully" });
   } catch (error) {
     res
       .status(500)

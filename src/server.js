@@ -47,6 +47,30 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use("/v1/api/", router);
 
+// Global error handler - must be after all routes
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  
+  // Don't leak error details in production
+  const isDevelopment = process.env.NODE_ENV !== "production";
+  
+  res.status(err.status || 500).json({
+    error: err.message || "Internal server error",
+    ...(isDevelopment && { stack: err.stack }),
+  });
+});
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
+
+// Handle uncaught exceptions
+process.on("uncaughtException", (error) => {
+  console.error("Uncaught Exception:", error);
+  process.exit(1);
+});
+
 const { PORT } = process.env;
 
 const startServer = () => {
